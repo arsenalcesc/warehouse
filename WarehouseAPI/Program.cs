@@ -1,3 +1,7 @@
+using Microsoft.EntityFrameworkCore;
+using WarehouseAPI.Database;
+using WarehouseAPI.Services;
+
 namespace WarehouseAPI
 {
     public class Program
@@ -19,6 +23,9 @@ namespace WarehouseAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
+            builder.Services.AddScoped<UserService>();
 
             var app = builder.Build();
 

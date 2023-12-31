@@ -68,15 +68,6 @@ namespace WarehouseAPI.Controllers
             // Add more products as needed
         };
 
-        //create a method to return the product based on id
-        [HttpGet("{id}")]
-        public ActionResult<Product> Get(int id)
-        {
-            var product = _products.FirstOrDefault(p => p.Id == id);
-            if (product == null) return NotFound();
-            return Ok(product);
-        }
-
         [HttpGet]
         public ActionResult<IEnumerable<Product>> Get()
         {
