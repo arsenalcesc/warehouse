@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
+using WarehouseAPI.Services;
 
 namespace WarehouseAPI.Controllers
 {
@@ -7,29 +8,30 @@ namespace WarehouseAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
+        //add a constructor to inject the user service
+        private readonly UserService _userService;
+
+        public UserController(UserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpPost]
         public IActionResult Post([FromBody] LoginModel login)
         {
-            if (login.Username == "admin" && login.Password == "pass")
-            {
-                // Return a simple guid as a token
-                var token = Guid.NewGuid().ToString();
+            var user = _userService.Login(login.Username, login.Password);
 
-                // Create a response object with required details
-                var response = new
-                {
-                    Token = token,
-                    Username = login.Username,
-                    FirstName = "AdminFirstName", // Replace with actual first name
-                    LastName = "AdminLastName" // Replace with actual last name
-                };
-
-                return Ok(response);
-            }
-            else
-            {
+            if (user == null)
                 return Unauthorized();
-            }
+
+            var response = new
+            {
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+
+            return Ok(response);
         }
 
         public class LoginModel

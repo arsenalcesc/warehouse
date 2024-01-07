@@ -1,10 +1,14 @@
 <template>
-  <div class="container">
+  <div class="container mt-5">
     <div class="row justify-content-center">
-      <div class="col-md-6">
+      <div class="col-md-6">     
+        
+        <h2 class="text-center mb-4" style="margin-top: 20px;">Stock Management System</h2>
+
+
         <div class="card mt-5">
           <div class="card-body">
-            <h2 class="card-title text-center mb-4">Login</h2>
+            <h4 class="card-title text-center mb-4">Login</h4>
             <form @submit.prevent="handleLogin">
               <div class="mb-3">
                 <label for="username" class="form-label">Username:</label>
@@ -45,7 +49,6 @@ const handleLogin = async () => {
     // Store the entire response object in local storage
     localStorage.setItem('userDetails', JSON.stringify(response.data));
 
-    // Navigate to the home page on successful login
     router.push('/');
   } catch (err) {
     if (err.response && err.response.status === 401) {
@@ -60,6 +63,7 @@ const handleLogin = async () => {
 
 </script>
 
+
 <style scoped>
-/* ... existing style code ... */
+
 </style>

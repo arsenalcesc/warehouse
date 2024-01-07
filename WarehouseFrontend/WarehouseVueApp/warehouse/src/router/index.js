@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
+import DashboardView from '../views/DashboardView.vue';
 import LoginView from '../views/LoginView.vue';
 
 const router = createRouter({
@@ -7,25 +7,38 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      name: 'dashboard',
+      component: DashboardView,
       meta: { requiresAuth: true }
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      meta: { layout: 'login' }
     },
     { 
-      path: '/inventory', 
-      name: 'inventory', 
-      component: () => import('../views/InventoryView.vue'),
+      path: '/products', 
+      name: 'products',
+      component: () => import('../views/ProductsView.vue'),
       meta: { requiresAuth: true }
     },
     { 
       path: '/sales',     
       name: 'sales',     
       component: () => import('../views/SalesView.vue'),
+      meta: { requiresAuth: true }
+    },
+    { 
+      path: '/categories',     
+      name: 'categories',     
+      component: () => import('../views/CategoriesView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/category/:id',
+      name: 'category',
+      component: () => import('../views/CategoryView.vue'),
       meta: { requiresAuth: true }
     }
   ]
@@ -37,8 +50,7 @@ router.beforeEach((to, from, next) => {
   const authToken = localStorage.getItem('userDetails');
   // If user is already logged in and tries to access the login page
   if (authToken && to.name === 'login') {
-    // Redirect to the home page
-    next({ name: 'home' });
+    next({ name: 'dashboard' });
     return;
   }
 

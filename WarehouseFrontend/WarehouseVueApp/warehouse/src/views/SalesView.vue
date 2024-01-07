@@ -1,5 +1,6 @@
 <template>
   <div class="container mt-4">
+    <h2 class="mb-4">Sales</h2>
     <table class="table table-striped">
       <thead>
         <tr>

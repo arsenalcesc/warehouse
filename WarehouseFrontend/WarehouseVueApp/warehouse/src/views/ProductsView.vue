@@ -1,34 +1,35 @@
 <template>
   <div class="container mt-4">
+    <h2 class="mb-4">Products</h2>
     <table class="table table-striped">
       <thead>
         <tr>
           <th>ID</th>
           <th>Image</th>
           <th>Name</th>
-          <th>Price per Item</th>
-          <th>Quantity per Carton</th>
+          <th>Price per Item ($)</th>
+          <th>Quantity per Box</th>
           <th>CBM</th>
           <th>Description</th>
           <th>Stock</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>{{ product.id }}</td>
+        <tr v-for="product in products" :key="product.productId">
+          <td>{{ product.productId }}</td>
           <td>
             <img 
-              :src="product.pictureUrl" 
+              :src="product.imageUrl" 
               :alt="product.name" 
               class="product-image" 
             />
           </td>
           <td>{{ product.name }}</td>
-          <td>${{ product.pricePerItem }}</td>
-          <td>{{ product.quantityPerCarton }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.quantityPerBox }}</td>
           <td>{{ product.cbm }}</td>
           <td>{{ product.description }}</td>
-          <td>{{ product.stock }}</td>
+          <td>{{ product.stockCount }}</td>
         </tr>
       </tbody>
     </table>

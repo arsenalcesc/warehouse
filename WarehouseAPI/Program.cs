@@ -25,6 +25,7 @@ namespace WarehouseAPI
             builder.Services.AddSwaggerGen();
 
 
+            builder.Services.AddDbContext<WarehouseDbContext>();
             builder.Services.AddScoped<UserService>();
 
             var app = builder.Build();
