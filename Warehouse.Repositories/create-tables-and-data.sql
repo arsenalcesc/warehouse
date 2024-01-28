@@ -31,9 +31,9 @@ CREATE TABLE Users (
     LastName VARCHAR(100) NOT NULL,
     Password VARCHAR(100) NOT NULL,
     IsAdmin BIT NOT NULL,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
 );
 
@@ -49,9 +49,9 @@ CREATE TABLE Categories (
     CategoryId INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
     Description VARCHAR(500) NULL,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
 );
 
@@ -69,16 +69,16 @@ CREATE TABLE Customers (
     Email VARCHAR(100) NOT NULL,
     Phone VARCHAR(100) NOT NULL,
     Address VARCHAR(500) NOT NULL,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
 );
 
 ALTER TABLE Customers ADD CONSTRAINT FK_Customers_Users_AddedByUserId FOREIGN KEY (AddedByUserId) REFERENCES  Users(UserId);
 ALTER TABLE Customers ADD CONSTRAINT FK_Customers_Users_UpdatedByUserId FOREIGN KEY (UpdatedByUserId) REFERENCES  Users(UserId);
 
---using good sql server practices, create a Products table with these columns Id, Name, Price, Description, AddedOn, CategoryId, ImageUrl, CBM, QuantityPerBox
+--using good sql server practices, create a Products table with these columns Id, Name, Price, Description, AddedOnUtc, CategoryId, ImageUrl, CBM, QuantityPerBox
 CREATE TABLE Products (
     ProductId INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
@@ -88,9 +88,9 @@ CREATE TABLE Products (
     ImageUrl VARCHAR(500) NULL,
     CBM DECIMAL(18,2) NOT NULL,
     QuantityPerBox INT NOT NULL,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
 );
 
@@ -106,53 +106,32 @@ CREATE TABLE Inventories (
     FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
 );
 
-CREATE TABLE StockMovementLog (
-    LogId INT PRIMARY KEY IDENTITY,
-    ProductId INT,
-    QuantityChanged INT,
-    QuantityBeforeChange INT,
-    QuantityAfterChange INT,
-    DateChanged DATETIME,
-    ChangeType NVARCHAR(50),
-    FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
-);
 
-
---create a table for Sales with these columns Id, CustomerId, SaleDate, AddedOn, AddedByUserId, SaleByUserId
+--create a table for Sales with these columns Id, CustomerId, SaleDate, AddedOnUtc, AddedByUserId, SaleByUserId
 CREATE TABLE Sales (
     SaleId INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
     CustomerId INT NOT NULL,
     SaleDate DATETIME NOT NULL,
     SaleByUserId INT NOT NULL,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
-    UpdatedByUserId INT NULL
 );
 
 ALTER TABLE Sales ADD CONSTRAINT FK_Sales_Customers FOREIGN KEY (CustomerId) REFERENCES Customers(CustomerId);
 ALTER TABLE Sales ADD CONSTRAINT FK_Sales_Users FOREIGN KEY (SaleByUserId) REFERENCES  Users(UserId);
 ALTER TABLE Sales ADD CONSTRAINT FK_Sales_Users_AddedByUserId FOREIGN KEY (AddedByUserId) REFERENCES  Users(UserId);
-ALTER TABLE Sales ADD CONSTRAINT FK_Sales_Users_UpdatedByUserId FOREIGN KEY (UpdatedByUserId) REFERENCES  Users(UserId);
 
---add a saleitems table with these columns Id, SaleId, ProductId, Quantity, Price, AddedOn, AddedByUserId, updatedOn, updatedByUserId
+--add a saleitems table with these columns Id, SaleId, ProductId, Quantity, Price, AddedOnUtc, AddedByUserId, UpdatedOnUtc, updatedByUserId
 CREATE TABLE SaleItems (
     SaleItemId INT NOT NULL IDENTITY(1,1) PRIMARY KEY,
     SaleId INT NOT NULL,
     ProductId INT NOT NULL,
     Quantity INT NOT NULL,
-    Price DECIMAL(18,2) NOT NULL,
-    IsDifferentToStandardPrice BIT NOT NULL,
-    AddedOn DATETIME NOT NULL,
-    AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
-    UpdatedByUserId INT NULL
+    Price DECIMAL(18,2) NOT NULL
 );
 
 ALTER TABLE SaleItems ADD CONSTRAINT FK_SaleItems_Sales FOREIGN KEY (SaleId) REFERENCES Sales(SaleId);
 ALTER TABLE SaleItems ADD CONSTRAINT FK_SaleItems_Products FOREIGN KEY (ProductId) REFERENCES Products(ProductId);
-ALTER TABLE SaleItems ADD CONSTRAINT FK_SaleItems_Users_AddedByUserId FOREIGN KEY (AddedByUserId) REFERENCES  Users(UserId);
-ALTER TABLE SaleItems ADD CONSTRAINT FK_SaleItems_Users_UpdatedByUserId FOREIGN KEY (UpdatedByUserId) REFERENCES  Users(UserId);
 
 
 
@@ -160,9 +139,9 @@ CREATE TABLE Suppliers (
     SupplierId INT PRIMARY KEY IDENTITY,
     Name NVARCHAR(255),
     ContactInfo NVARCHAR(MAX),
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
 );
 
@@ -171,9 +150,9 @@ CREATE TABLE Purchases (
     PurchaseId INT PRIMARY KEY IDENTITY,
     SupplierId INT,
     PurchaseDate DATETIME,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
     FOREIGN KEY (SupplierId) REFERENCES Suppliers(SupplierId)
 );
@@ -183,9 +162,9 @@ CREATE TABLE PurchaseItems (
     PurchaseId INT,
     ProductId INT,
     Quantity INT,
-    AddedOn DATETIME NOT NULL,
+    AddedOnUtc DATETIME NOT NULL,
     AddedByUserId INT NOT NULL,
-    UpdatedOn DATETIME NULL,
+    UpdatedOnUtc DATETIME NULL,
     UpdatedByUserId INT NULL
     FOREIGN KEY (PurchaseId) REFERENCES Purchases(PurchaseId),
     FOREIGN KEY (ProductId) REFERENCES Products(ProductId)
@@ -218,7 +197,7 @@ BEGIN TRANSACTION;
 
 BEGIN TRY
 
-INSERT INTO Users (Username, Email, FirstName, LastName, Password, IsAdmin, AddedOn, AddedByUserId)
+INSERT INTO Users (Username, Email, FirstName, LastName, Password, IsAdmin, AddedOnUtc, AddedByUserId)
 VALUES 
 ('alberteinstein', 'alberteinstein@example.com', 'Albert', 'Einstein', 'pass123', 0, GETDATE(), 1),
 ('mariecurie', 'mariecurie@example.com', 'Marie', 'Curie', 'pass123', 0, GETDATE(), 1),
@@ -231,7 +210,7 @@ VALUES
 ('michelangelo', 'michelangelo@example.com', 'Michelangelo', '', 'pass123', 0, GETDATE(), 1),
 ('janeausten', 'janeausten@example.com', 'Jane', 'Austen', 'pass123', 0, GETDATE(), 1);
 
-INSERT INTO Categories (Name, Description, AddedOn, AddedByUserId) 
+INSERT INTO Categories (Name, Description, AddedOnUtc, AddedByUserId) 
 VALUES 
 ('Kitchen', 'Kitchen supplies and appliances', GETDATE(), 1),
 ('Electronics', 'Electronic gadgets and devices', GETDATE(), 1),
@@ -244,7 +223,7 @@ VALUES
 ('Clothing', 'Apparel for men and women', GETDATE(), 1),
 ('Footwear', 'Shoes and sandals for all ages', GETDATE(), 1);
 
-INSERT INTO Customers (BusinessName, FirstName, LastName, Email, Phone, Address, AddedOn, AddedByUserId) 
+INSERT INTO Customers (BusinessName, FirstName, LastName, Email, Phone, Address, AddedOnUtc, AddedByUserId) 
 VALUES 
 ('ABC Corp', 'Alice', 'Brown', 'alicebrown@example.com', '123-456-7890', '123 Main St', GETDATE(), 1),
 ('XYZ Inc', 'David', 'Clark', 'davidclark@example.com', '123-456-7891', '456 Elm St', GETDATE(), 1),
@@ -258,7 +237,7 @@ VALUES
 ('HIJ Company', 'Louis', 'Brown', 'louisbrown@example.com', '123-456-7899', '707 Elm St', GETDATE(), 1);
 
 --change below inserts to use the first 3 imageurls for all the rest of the products
-INSERT INTO Products (Name, Price, Description, CategoryId, ImageUrl, CBM, QuantityPerBox, AddedOn, AddedByUserId) 
+INSERT INTO Products (Name, Price, Description, CategoryId, ImageUrl, CBM, QuantityPerBox, AddedOnUtc, AddedByUserId) 
 VALUES 
 ('Blender', 49.99, 'Kitchen blender for smoothies', 1, 'https://i.ebayimg.com/images/g/oHsAAOSwM2lkCM1G/s-l1200.webp', 0.5, 10, GETDATE(), 1),
 ('Laptop', 999.99, 'High-performance laptop', 2, 'https://media.4rgos.it/s/Argos/2074539_R_SET?$Main768$&w=620&h=620', 1.5, 5, GETDATE(), 1),
@@ -289,121 +268,68 @@ VALUES
 (10, 150, @CurrentDate),
 (11, 120, @CurrentDate);
 
--- Insert into StockMovementLog with multiple logs per product
--- Product 1 Movements
-INSERT INTO StockMovementLog (ProductId, QuantityChanged, QuantityBeforeChange, QuantityAfterChange, DateChanged, ChangeType)
-VALUES 
-(1, 100, 0, 100, @CurrentDate, 'Initial Stock'),
-(1, -20, 100, 80, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(1, 50, 80, 130, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
--- Product 2 Movements
-(2, 50, 0, 50, @CurrentDate, 'Initial Stock'),
-(2, -15, 50, 35, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(2, 30, 35, 65, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
--- Product 3 Movements
-(3, 200, 0, 200, @CurrentDate, 'Initial Stock'),
-(3, -50, 200, 150, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(3, 25, 150, 175, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
--- Continue this pattern for remaining products
--- Product 4 Movements
-(4, 75, 0, 75, @CurrentDate, 'Initial Stock'),
-(4, -10, 75, 65, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(4, 20, 65, 85, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
--- Product 5 Movements
-(5, 150, 0, 150, @CurrentDate, 'Initial Stock'),
-(5, -30, 150, 120, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(5, 40, 120, 160, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
-(6, 100, 0, 100, @CurrentDate, 'Initial Stock'),
-(6, -20, 100, 80, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(6, 50, 80, 130, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
-(7, 50, 0, 50, @CurrentDate, 'Initial Stock'),
-(7, -15, 50, 35, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(7, 30, 35, 65, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
-(8, 200, 0, 200, @CurrentDate, 'Initial Stock'),
-(8, -50, 200, 150, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(8, 25, 150, 175, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
-(9, 75, 0, 75, @CurrentDate, 'Initial Stock'),
-(9, -10, 75, 65, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(9, 20, 65, 85, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
-(10, 150, 0, 150, @CurrentDate, 'Initial Stock'),
-(10, -30, 150, 120, DATEADD(day, 1, @CurrentDate), 'Sale'),
-(10, 40, 120, 160, DATEADD(day, 2, @CurrentDate), 'Restock'),
-
-(11, 150, 0, 150, @CurrentDate, 'Initial Stock'),
-(11, -30, 150, 120, DATEADD(day, 1, @CurrentDate), 'Sale');
-
-
 
 -- Assuming CustomerId ranges from 1 to 10
-INSERT INTO Sales (CustomerId, SaleDate, SaleByUserId, AddedOn, AddedByUserId) 
+INSERT INTO Sales (CustomerId, SaleDate, SaleByUserId, AddedOnUtc, AddedByUserId) 
 VALUES 
-(1, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 1, GETDATE(), 1),
-(2, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 2, GETDATE(), 1),
-(3, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 3, GETDATE(), 1),
-(4, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 4, GETDATE(), 1),
-(5, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 5, GETDATE(), 1),
-(6, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 6, GETDATE(), 1),
-(7, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 7, GETDATE(), 1),
-(8, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 8, GETDATE(), 1),
-(9, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 9, GETDATE(), 1),
-(10, DATEADD(DAY, -CAST(RAND()*365 AS INT), GETDATE()), 10, GETDATE(), 1);
+(1, GETDATE() - 900, 1, GETDATE(), 1),
+(2, GETDATE() - 800, 2, GETDATE(), 1),
+(3, GETDATE() - 700, 3, GETDATE(), 1),
+(4, GETDATE() - 600, 4, GETDATE(), 1),
+(5, GETDATE() - 500, 5, GETDATE(), 1),
+(6, GETDATE() - 700, 6, GETDATE(), 1),
+(7, GETDATE() - 500, 7, GETDATE(), 1),
+(8, GETDATE() - 400, 8, GETDATE(), 1),
+(9, GETDATE() - 300, 9, GETDATE(), 1),
+(10, GETDATE() - 200, 10, GETDATE(), 1);
 
-INSERT INTO SaleItems (SaleId, ProductId, Quantity, Price, IsDifferentToStandardPrice, AddedOn, AddedByUserId)
+INSERT INTO SaleItems (SaleId, ProductId, Quantity, Price)
 VALUES
 -- Sale 1 Items
-(1, 1, 2, 49.99, 1, GETDATE(), 1),
-(1, 2, 1, 999.99, 1, GETDATE(), 1),
+(1, 1, 2, 49.99),
+(1, 2, 1, 999.99),
 
 -- Sale 2 Items
-(2, 3, 3, 3.99, 1, GETDATE(), 1),
-(2, 4, 1, 29.99, 0, GETDATE(), 1),
-(2, 5, 2, 15.99, 1, GETDATE(), 1),
+(2, 3, 3, 3.99),
+(2, 4, 1, 29.99),
+(2, 5, 2, 15.99),
 
 -- Sale 3 Items
-(3, 6, 1, 19.99, 0, GETDATE(), 1),
-(3, 7, 1, 12.99, 1, GETDATE(), 1),
+(3, 6, 1, 19.99),
+(3, 7, 1, 12.99),
 
 -- Sale 4 Items
-(4, 8, 2, 25.99, 1, GETDATE(), 1),
-(4, 9, 1, 9.99, 1, GETDATE(), 1),
+(4, 8, 2, 25.99),
+(4, 9, 1, 9.99),
 
 -- Sale 5 Items
-(5, 3, 1, 3.99, 1, GETDATE(), 1),
-(5, 5, 2, 15.99, 1, GETDATE(), 1),
+(5, 3, 1, 3.99),
+(5, 5, 2, 15.99),
 
 -- Sale 6 Items
-(6, 6, 1, 19.99, 1, GETDATE(), 1),
-(6, 7, 1, 12.99, 1, GETDATE(), 1),
-(6, 9, 2, 9.99, 1, GETDATE(), 1),
+(6, 6, 1, 19.99),
+(6, 7, 1, 12.99),
+(6, 9, 2, 9.99),
 
 -- Sale 7 Items
-(7, 2, 1, 999.99, 1, GETDATE(), 1),
-(7, 4, 1, 29.99, 1, GETDATE(), 1),
-(7, 5, 1, 29.99, 0, GETDATE(), 1),
-(7, 6, 1, 29.99, 0, GETDATE(), 1),
-(7, 8, 1, 29.99, 1, GETDATE(), 1),
+(7, 2, 1, 999.99),
+(7, 4, 1, 29.99),
+(7, 5, 1, 29.99),
+(7, 6, 1, 29.99),
+(7, 8, 1, 29.99),
 
 -- Sale 8 Items
-(8, 1, 2, 49.99, 1, GETDATE(), 1),
-(8, 8, 1, 25.99, 1, GETDATE(), 1),
+(8, 1, 2, 49.99),
+(8, 8, 1, 25.99),
 
 -- Sale 9 Items
-(9, 5, 3, 15.99, 0, GETDATE(), 1),
-(9, 10, 1, 49.99, 1, GETDATE(), 1),
+(9, 5, 3, 15.99),
+(9, 10, 1, 49.99),
 
 -- Sale 10 Items
-(10, 7, 1, 12.99, 1, GETDATE(), 1),
-(10, 9, 2, 9.99, 0, GETDATE(), 1),
-(10, 10, 1, 49.99, 1, GETDATE(), 1);
+(10, 7, 1, 12.99),
+(10, 9, 2, 9.99),
+(10, 10, 1, 49.99);
 
 
 

@@ -35,6 +35,7 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios'; // Ensure axios is installed and imported
+import { API_ENDPOINTS } from '../../apiConfig';
 
 const loginForm = ref({
   username: '',
@@ -45,7 +46,7 @@ const router = useRouter();
 
 const handleLogin = async () => {
   try {
-    const response = await axios.post('https://localhost:7110/User', loginForm.value);
+    const response = await axios.post(API_ENDPOINTS.users, loginForm.value);
     // Store the entire response object in local storage
     localStorage.setItem('userDetails', JSON.stringify(response.data));
 

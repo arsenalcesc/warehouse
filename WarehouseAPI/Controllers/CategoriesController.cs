@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WarehouseAPI.Database;
+using Warehouse.BusinessLayer.Services;
+using Warehouse.DataLayer.DTOs;
 
 namespace WarehouseAPI.Controllers
 {
@@ -8,35 +8,24 @@ namespace WarehouseAPI.Controllers
     [Route("[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly WarehouseDbContext _context;
+        private readonly CategoryService _categoryService;
 
-        public CategoriesController(WarehouseDbContext context)
+        public CategoriesController(CategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
         {
-            var categoriesWithProductCount = await _context.Categories
-                .Select(category => new
-                {
-                    CategoryId = category.CategoryId,
-                    Name = category.Name,
-                    Description = category.Description,
-                    ProductCount = category.Products.Count // Assuming you have a navigation property 'Products' in your Category class
-                })
-                .ToListAsync();
-
+            var categoriesWithProductCount = await _categoryService.GetAll();
             return Ok(categoriesWithProductCount);
         }
 
-
-        //Create endpoint for getting a single category by id
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCategoryById(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryService.GetById(id);
 
             if (category == null)
                 return NotFound();
@@ -44,53 +33,21 @@ namespace WarehouseAPI.Controllers
             return Ok(category);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryUpdateDto updatedCategoryDto)
         {
-            if (category == null)
-                return BadRequest();
+            var success = await _categoryService.UpdateCategory(id, updatedCategoryDto);
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            if (!success)
+                return NotFound();
 
-            return CreatedAtAction(nameof(GetCategoryById), new { id = category.CategoryId }, category);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-
-            if (category == null)
-                return NotFound();
-
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            throw new NotImplementedException();
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryUpdateDto updatedCategory)
-        {
-            var category = await _context.Categories.FirstOrDefaultAsync(c => c.CategoryId == id);
-
-            if (category == null)
-                return NotFound();
-
-            category.Name = updatedCategory.Name;
-            category.Description = updatedCategory.Description;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        public class CategoryUpdateDto
-        {
-            public string Name { get; set; }
-            public string Description { get; set; }
-        }
-
     }
 }

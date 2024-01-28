@@ -1,23 +1,42 @@
 <template>
     <ul class="navbar-nav">
         <li class="nav-item">
-            <RouterLink class="nav-link" to="/"><span class="icon"><i class="fa-solid fa-house"></i></span>Dashboard</RouterLink>
+            <RouterLink class="nav-link" to="/"><span class="icon"><i class="fa-solid fa-house"></i></span>Dashboard
+            </RouterLink>
         </li>
         <li class="nav-item">
-            <RouterLink class="nav-link" to="/products"><span class="icon"><i class="fa-solid fa-boxes-stacked"></i></span>Products</RouterLink>
+            <RouterLink class="nav-link" to="/categories"><span class="icon"><i
+                        class="fa-solid fa-chart-line"></i></span>Categories</RouterLink>
         </li>
         <li class="nav-item">
-            <RouterLink class="nav-link" to="/sales"><span class="icon"><i class="fa-solid fa-chart-line"></i></span>Sales</RouterLink>
+            <RouterLink class="nav-link" to="/products"><span class="icon"><i
+                        class="fa-solid fa-boxes-stacked"></i></span>Products</RouterLink>
         </li>
         <li class="nav-item">
-            <RouterLink class="nav-link" to="/categories"><span class="icon"><i class="fa-solid fa-chart-line"></i></span>Categories</RouterLink>
+            <RouterLink class="nav-link" to="/sales"><span class="icon"><i class="fa-solid fa-chart-line"></i></span>Sales
+            </RouterLink>
         </li>
-        <!-- Add more links as needed -->
+        <li class="nav-item">
+            <a class="nav-link" @click.prevent="logout">
+                <span class="icon"><i class="fa-solid fa-right-from-bracket"></i></span> Logout
+            </a>
+        </li>
     </ul>
 </template>
   
-<script setup>
+<script>
 import { RouterLink } from 'vue-router';
+
+export default {
+    methods: {
+        logout() {
+            if (confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('userDetails');
+                this.$router.push('/login');
+            }
+        }
+    }
+};
 </script>
   
 <style scoped>
@@ -49,14 +68,13 @@ li {
 }
 
 .nav-link {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
-.icon{
+.icon {
     margin-right: 10px;
     width: 30px;
     text-align: center;
 }
-
 </style>

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using WarehouseAPI.Database;
-using WarehouseAPI.Services;
+using Warehouse.BusinessLayer.Services;
+using Warehouse.DataLayer;
+using Warehouse.DataLayer.Repositories;
 
 namespace WarehouseAPI
 {
@@ -25,8 +26,20 @@ namespace WarehouseAPI
             builder.Services.AddSwaggerGen();
 
 
-            builder.Services.AddDbContext<WarehouseDbContext>();
+            builder.Services.AddDbContext<WarehouseDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("WarehouseDbConnection")));
+
+            builder.Services.AddScoped<CategoryService>();
+            builder.Services.AddScoped<ProductService>();
+            builder.Services.AddScoped<SaleService>();
             builder.Services.AddScoped<UserService>();
+
+
+            builder.Services.AddScoped<CategoryRepository>();
+            builder.Services.AddScoped<ProductRepository>();
+            builder.Services.AddScoped<SaleRepository>();
+            builder.Services.AddScoped<UserRepository>();
+
 
             var app = builder.Build();
 
@@ -40,7 +53,6 @@ namespace WarehouseAPI
             app.UseHttpsRedirection();
             app.UseStaticFiles(); // Enable static file serving
             app.UseAuthorization();
-
 
             app.MapControllers();
 

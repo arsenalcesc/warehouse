@@ -59,12 +59,7 @@ const username = computed(() => {
   return userDetails ? userDetails.username : '';
 });
 
-const logout = () => {
-  // Remove the user details from local storage
-  localStorage.removeItem('userDetails');
-  // Redirect to the login page
-  router.push('/login');
-};
+
 </script>
 
 <style scoped>

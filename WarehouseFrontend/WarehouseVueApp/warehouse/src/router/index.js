@@ -24,9 +24,15 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     { 
-      path: '/sales',     
+      path: '/sales',
       name: 'sales',     
       component: () => import('../views/SalesView.vue'),
+      meta: { requiresAuth: true }
+    },
+    { 
+      path: '/sale-add',     
+      name: 'sale-add',     
+      component: () => import('../views/SaleAddView.vue'),
       meta: { requiresAuth: true }
     },
     { 
@@ -37,8 +43,8 @@ const router = createRouter({
     },
     {
       path: '/category/:id',
-      name: 'category',
-      component: () => import('../views/CategoryView.vue'),
+      name: 'category-edit',
+      component: () => import('../views/CategoryEditView.vue'),
       meta: { requiresAuth: true }
     }
   ]
@@ -46,26 +52,20 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach((to, from, next) => {
-  // Check for the auth token in local storage
   const authToken = localStorage.getItem('userDetails');
-  // If user is already logged in and tries to access the login page
+
   if (authToken && to.name === 'login') {
     next({ name: 'dashboard' });
     return;
   }
 
-  // Check if the route requires authentication
   if (to.matched.some(record => record.meta.requiresAuth)) {
-
     if (!authToken) {
-      // Redirect to the login page if there's no auth token
       next({ name: 'login' });
     } else {
-      // Proceed to the route if authenticated
       next();
     }
   } else {
-    // If the route does not require authentication, proceed
     next();
   }
 });

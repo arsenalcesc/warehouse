@@ -1,117 +1,82 @@
 <template>
   <div class="container mt-4">
     <h2 class="mb-4">Sales</h2>
-    <table class="table table-striped">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <router-link to="/sale-add">
+        <button class="btn btn-secondary">Add Sale</button>
+      </router-link>
+    </div>
+
+    <table v-if="!isLoading" class="table table-striped">
       <thead>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Price per Item</th>
-          <th>Quantity per Carton</th>
-          <th>CBM</th>
-          <th>Description</th>
-          <th>Stock</th>
-          <th class="sale-quantity-input">Sale Quantity</th>
-          <th>Cost</th>
+          <th>Id</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th>Products</th>
+          <th>Stock Items</th>
+          <th>Amount ($)</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id" :class="{ 'table-success': product.flash }">
-          <td>{{ product.id }}</td>
-          <td>{{ product.name }}</td>
-          <td>${{ product.pricePerItem }}</td>
-          <td>{{ product.quantityPerCarton }}</td>
-          <td>{{ product.cbm }}</td>
-          <td>{{ product.description }}</td>
-          <td>{{ product.stock }}</td>
-          <td>
-            <input type="number" min="0" v-model="product.saleQuantity" class="form-control"/>
-          </td>  
-          <td class="cost-cell">${{ calculateCost(product) }}</td>
-
+        <tr v-for="sale in sales" :key="sale.id">
+          <td>{{ sale.saleId }}</td>
+          <td>{{ sale.customerBusinessName }}</td>
+          <td>{{ sale.saleDate }}</td>
+          <td>{{ sale.productsCount }}</td>
+          <td>{{ sale.stockItemsCount }}</td>
+          <td>{{ sale.amount }}</td>
         </tr>
       </tbody>
     </table>
-    <div class="mt-3 text-end"> <!-- Bootstrap class for text alignment -->
-      <p>Total Cost: ${{ totalCost }}</p>
-      <button class="btn btn-primary" @click="submitSales">Submit Sales</button>
-    </div>
+    <p v-if="isLoading">Loading...</p>
   </div>
 </template>
 
-
-
 <script>
 import axios from 'axios';
+import { API_ENDPOINTS } from '../../apiConfig';
 
 export default {
   data() {
     return {
-      products: []
+      sales: [],
+      isLoading: false
     };
   },
-  computed: {
-    totalCost() {
-      return this.products.reduce((sum, product) => {
-        return sum + (product.pricePerItem * product.saleQuantity);
-      }, 0).toFixed(2); // Fix to 2 decimal places
-    }
-  },
-  methods: {   
-    calculateCost(product) {
-      return (product.pricePerItem * product.saleQuantity).toFixed(2); // Rounds to two decimal places
-    },
-    fetchProducts() {
-      axios.get('https://localhost:7110/Products')
-        .then(response => {
-          this.products = response.data.map(p => ({ ...p, saleQuantity: 0, flash: false }));
-        })
-        .catch(error => {
-          console.error("Error fetching products:", error);
-        });
-    },
-    submitSales() {
-      let salesData = this.products.filter(p => p.saleQuantity > 0).map(p => ({
-        productId: p.id,
-        quantitySold: p.saleQuantity
-      }));
-
-      axios.post('https://localhost:7110/Products/SellProducts', salesData)
-        .then(response => {
-          this.flashUpdatedStock(response.data);
-        })
-        .catch(error => {
-          console.error("Error submitting sales:", error);
-        });
-    },
-    flashUpdatedStock(updatedProducts) {
-      this.products = this.products.map(p => {
-        let updatedProduct = updatedProducts.find(up => up.id === p.id);
-        if (updatedProduct) {
-          return { ...updatedProduct, flash: true, saleQuantity: 0 };
-        }
-        return { ...p, saleQuantity: 0 };
-      });
-
-      setTimeout(() => {
-        this.products = this.products.map(p => ({ ...p, flash: false }));
-      }, 4000); // Flash duration
-    }
-  },
   mounted() {
-    this.fetchProducts();
-  }
+    this.isLoading = true;
+    axios.get(API_ENDPOINTS.sales)
+      .then(response => {
+        this.sales = response.data.map(sale => {
+          sale.saleDate = this.formatDate(sale.saleDate);
+          return sale;
+        });
+      })
+      .catch(error => {
+        console.error("There was an error fetching the sales:", error);
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
+  },
+  methods: {
+    formatDate(dateString) {
+      const options = {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return new Date(dateString).toLocaleDateString('en-GB', options);
+    }
+
+  },
 };
 </script>
 
 <style>
-/* ... existing styles ... */
-
-.sale-quantity-input {
-  width: 100px; /* Adjust as needed */
-}
-
-.flash-row {
-  background-color: #d1ecf1; /* Example color, adjust as needed */
-}
+/* Add your styles here */
 </style>

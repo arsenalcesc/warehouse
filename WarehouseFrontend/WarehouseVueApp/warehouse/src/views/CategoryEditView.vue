@@ -36,6 +36,7 @@
   
 <script>
 import axios from 'axios';
+import { API_ENDPOINTS } from '../../apiConfig';
 
 export default {
     data() {
@@ -52,7 +53,7 @@ export default {
     methods: {
         fetchCategory() {
             this.isLoading = true;
-            axios.get('https://localhost:7110/Categories/' + this.$route.params.id)
+            axios.get(API_ENDPOINTS.categories + '/' + this.$route.params.id)
                 .then(response => {
                     this.category = response.data;
                 })
@@ -65,7 +66,7 @@ export default {
         },
         updateCategory() {
             this.clearMessages();
-            axios.put('https://localhost:7110/Categories/' + this.category.categoryId, this.category)
+            axios.put(API_ENDPOINTS.categories + '/' + this.category.categoryId, this.category)
                 .then(() => {
                     setTimeout(() => { this.successMessage = 'Category updated successfully.'; }, 100);
                 })
@@ -77,7 +78,7 @@ export default {
         deleteCategory() {
             if (confirm('Are you sure you want to delete this category?')) {
                 this.clearMessages();
-                axios.delete('https://localhost:7110/Categories/' + this.category.categoryId)
+                axios.delete(API_ENDPOINTS.categories + '/' + this.category.categoryId)
                     .then(() => {
                         setTimeout(() => { this.successMessage = 'Category deleted successfully.'; }, 100);
                     })

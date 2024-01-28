@@ -38,6 +38,7 @@
 
 <script>
 import axios from 'axios';
+import { API_ENDPOINTS } from '../../apiConfig';
 
 export default {
   data() {
@@ -46,7 +47,7 @@ export default {
     };
   },
   mounted() {
-    axios.get('https://localhost:7110/Products') // Replace with your API URL
+    axios.get(API_ENDPOINTS.products)
       .then(response => {
         this.products = response.data;
       })

@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarehouseAPI", "WarehouseAPI\WarehouseAPI.csproj", "{767A4B5E-0193-4B65-B5B5-A1F38BE256F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Warehouse.API", "WarehouseAPI\Warehouse.API.csproj", "{767A4B5E-0193-4B65-B5B5-A1F38BE256F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WarehouseFrontend", "WarehouseFrontend\WarehouseFrontend.csproj", "{A6B2ADF4-FDA3-4DAF-BA13-5D030D4E57D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WarehouseFrontend", "WarehouseFrontend\WarehouseFrontend.csproj", "{A6B2ADF4-FDA3-4DAF-BA13-5D030D4E57D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.BusinessLayer", "Warehouse.Services\Warehouse.BusinessLayer.csproj", "{156A83CE-DA07-4218-9B0D-B042C5E33047}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Warehouse.DataLayer", "Warehouse.Repositories\Warehouse.DataLayer.csproj", "{93990406-C786-4DBF-9346-C219D23792DD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{A6B2ADF4-FDA3-4DAF-BA13-5D030D4E57D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6B2ADF4-FDA3-4DAF-BA13-5D030D4E57D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6B2ADF4-FDA3-4DAF-BA13-5D030D4E57D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{156A83CE-DA07-4218-9B0D-B042C5E33047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{156A83CE-DA07-4218-9B0D-B042C5E33047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{156A83CE-DA07-4218-9B0D-B042C5E33047}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{156A83CE-DA07-4218-9B0D-B042C5E33047}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93990406-C786-4DBF-9346-C219D23792DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93990406-C786-4DBF-9346-C219D23792DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93990406-C786-4DBF-9346-C219D23792DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93990406-C786-4DBF-9346-C219D23792DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

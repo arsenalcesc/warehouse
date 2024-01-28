@@ -1,37 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using WarehouseAPI.Services;
+using Warehouse.BusinessLayer.Services;
 
 namespace WarehouseAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        //add a constructor to inject the user service
         private readonly UserService _userService;
 
-        public UserController(UserService userService)
+        public UsersController(UserService userService)
         {
             _userService = userService;
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] LoginModel login)
+        public async Task<IActionResult> Post([FromBody] LoginModel login)
         {
-            var user = _userService.Login(login.Username, login.Password);
+            var user = await _userService.GetByUsernameAndPassword(login.Username, login.Password);
 
             if (user == null)
                 return Unauthorized();
 
-            var response = new
-            {
-                Username = user.Username,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            };
-
-            return Ok(response);
+            return Ok(user);
         }
 
         public class LoginModel

@@ -31,6 +31,7 @@
 
 <script>
 import axios from 'axios';
+import { API_ENDPOINTS } from '../../apiConfig';
 
 export default {
   data() {
@@ -41,7 +42,7 @@ export default {
   },
   mounted() {
     this.isLoading = true;
-    axios.get('https://localhost:7110/Categories') // Replace with your API URL
+    axios.get(API_ENDPOINTS.categories) // Replace with your API URL
       .then(response => {
         this.categories = response.data;
       })

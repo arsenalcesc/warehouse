@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Xml.Linq;
-using WarehouseAPI.Database;
+using Warehouse.BusinessLayer.Services;
 
 namespace WarehouseAPI.Controllers
 {
@@ -9,45 +7,19 @@ namespace WarehouseAPI.Controllers
     [Route("[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly WarehouseDbContext _context;
+        private readonly ProductService _productService;
 
-        public ProductsController(WarehouseDbContext context)
+        public ProductsController(ProductService productService)
         {
-            _context = context;
+            _productService = productService;
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Product>> Get()
+        public async Task<IActionResult> GetAllProducts()
         {
-            //return all products with their stock count
-            var productsWithStockCount = _context.Products
-                .Select(product => new
-                {
-                    ProductId = product.ProductId,
-                    ImageUrl = product.ImageUrl,
-                    Name = product.Name,
-                    Price = product.Price,
-                    QuantityPerBox = product.QuantityPerBox,
-                    CBM = product.CBM,
-                    Description = product.Description,
-                    StockCount = product.Inventory != null ? product.Inventory.QuantityInStock : 0
-                })
-                .ToList();
+            var productsWithStockCount = await _productService.GetAll();
 
             return Ok(productsWithStockCount);
         }
-
-        [HttpPost("SellProducts")]
-        public ActionResult<List<Product>> SellProducts(List<Sale> sales)
-        {
-            return Ok();
-        }
-
-    }
-
-    public class Sale
-    {
-        public int ProductId { get; set; }
-        public int QuantitySold { get; set; }
     }
 }
